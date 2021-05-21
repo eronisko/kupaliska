@@ -1,8 +1,8 @@
 <?php
 
 use App\Aggregates\TicketAggregate;
+use App\Exceptions\TicketDenied;
 use App\Http\Requests\TicketScanRequest;
-use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -25,7 +25,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/purchase', function (Request $request) {
     $request
         ->validate(
-            ['type' => 'required|in:10_entries,season'],
+            ['type' => 'required|in:1_entry,10_entries,season'],
             ['type.in' => 'Must be one of: :values']
         );
 
@@ -40,9 +40,19 @@ Route::post('/purchase', function (Request $request) {
 });
 
 Route::post('/enter', function (TicketScanRequest $request) {
-    TicketAggregate::retrieve($request->input('ticket_uuid'))
-        ->enter($request->input('pool'))
-        ->persist();
+    try {
+        TicketAggregate::retrieve($request->input('ticket_uuid'))
+            ->enter($request->input('pool'))
+            ->persist();
+
+        return response(['admit' => true]);
+    } catch (TicketDenied $e) {
+        return response([
+            'admit' => false,
+            'message' => $e->getMessage(),
+        ]);
+    }
+
 });
 
 Route::post('/exit', function (TicketScanRequest $request) {

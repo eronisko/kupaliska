@@ -20,12 +20,12 @@ class TicketMarkingTest extends TestCase
         ->given([new TicketPurchased('10_entries')])
         ->when(fn (TicketAggregate $aggregate) => $aggregate->uuid())
         ->then(function (string $ticketUuid) {
-            $response = $this->postJson('/api/enter', [
+            $this->assertEquals(0, Ticket::findByUuid($ticketUuid)->marked_entries);
+
+            $this->postJson('/api/enter', [
                 'ticket_uuid' => $ticketUuid,
                 'pool' => 'rosnicka'
             ]);
-
-            $response->assertStatus(200);
 
             $this->assertEquals(1, Ticket::findByUuid($ticketUuid)->marked_entries);
         });
