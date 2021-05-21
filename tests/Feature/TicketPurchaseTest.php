@@ -27,7 +27,7 @@ class TicketPurchaseTest extends TestCase
         $this->assertEquals(1, Ticket::count());
     }
 
-    public function test_validates_works()
+    public function test_validates_type()
     {
         $response = $this->postJson('/api/purchase', ['type' => 'bad']);
         $response->assertStatus(422);
