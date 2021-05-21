@@ -1,6 +1,7 @@
 <?php
 
 use App\Aggregates\TicketAggregate;
+use App\Http\Requests\TicketScanRequest;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -38,10 +39,14 @@ Route::post('/purchase', function (Request $request) {
     return response(['ticket_uuid' => $uuid], 201);
 });
 
-Route::post('/enter', function (Request $request) {
-    $request->validate(['ticket_uuid' => 'required|uuid']);
-
+Route::post('/enter', function (TicketScanRequest $request) {
     TicketAggregate::retrieve($request->input('ticket_uuid'))
-        ->enter()
+        ->enter($request->input('pool'))
+        ->persist();
+});
+
+Route::post('/exit', function (TicketScanRequest $request) {
+    TicketAggregate::retrieve($request->input('ticket_uuid'))
+        ->exit($request->input('pool'))
         ->persist();
 });
