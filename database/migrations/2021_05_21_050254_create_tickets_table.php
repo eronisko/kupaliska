@@ -17,7 +17,7 @@ class CreateTicketsTable extends Migration
             $table->id();
             $table->string('uuid')->unique();
             $table->string('type');
-            $table->integer('entries')->default(0);
+            $table->integer('marked_entries')->default(0);
             $table->timestamps();
         });
     }

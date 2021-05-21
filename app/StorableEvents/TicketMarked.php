@@ -4,7 +4,7 @@ namespace App\StorableEvents;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-class TicketEntered extends ShouldBeStored
+class TicketMarked extends ShouldBeStored
 {
     public string $pool;
 

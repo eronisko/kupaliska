@@ -3,7 +3,7 @@
 namespace App\Projectors;
 
 use App\Models\Ticket;
-use App\StorableEvents\TicketEntered;
+use App\StorableEvents\TicketMarked;
 use App\StorableEvents\TicketPurchased;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
@@ -17,10 +17,10 @@ class TicketProjector extends Projector
         ]);
     }
 
-    public function onTicketEntered(TicketEntered $event, string $aggregateUuid)
+    public function onTicketMarked(TicketMarked $event, string $aggregateUuid)
     {
         $ticket = Ticket::findByUuid($aggregateUuid);
-        $ticket->entries = $ticket->entries + 1;
+        $ticket->marked_entries = $ticket->marked_entries + 1;
         $ticket->save();
     }
 }
