@@ -13,24 +13,16 @@ class TicketEntriesTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
-    public function test_counts_entries()
+    public function test_entries_are_being_counted()
     {
         TicketAggregate::fake()
-            ->given([new TicketPurchased('10_entries')])
-            ->when(function (TicketAggregate $aggregate) {
-                $aggregate
-                    ->enter()
-                    ->enter()
-                    ->persist();
-                return $aggregate->uuid();
-            })
-            ->then(function (string $aggregateUuid) {
-                $this->assertEquals(2, Ticket::findByUuid($aggregateUuid)->entries);
-            });
+        ->given([new TicketPurchased('10_entries')])
+        ->when(fn (TicketAggregate $aggregate) => $aggregate->uuid())
+        ->then(function (string $ticketUuid) {
+            $response = $this->postJson('/api/enter', ['ticket_uuid' => $ticketUuid]);
+            $response->assertStatus(200);
+
+            $this->assertEquals(1, Ticket::findByUuid($ticketUuid)->entries);
+        });
     }
 }

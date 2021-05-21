@@ -21,7 +21,7 @@ class TicketPurchaseTest extends TestCase
         $response
             ->assertStatus(201)
             ->assertJson([
-                'uuid' => true,
+                'ticket_uuid' => true,
             ]);
 
         $this->assertEquals(1, Ticket::count());

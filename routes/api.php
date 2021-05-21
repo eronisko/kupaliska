@@ -35,5 +35,13 @@ Route::post('/purchase', function (Request $request) {
         ->purchaseTicket($request->input('type'))
         ->persist();
 
-    return response(['uuid' => $uuid], 201);
+    return response(['ticket_uuid' => $uuid], 201);
+});
+
+Route::post('/enter', function (Request $request) {
+    $request->validate(['ticket_uuid' => 'required|uuid']);
+
+    TicketAggregate::retrieve($request->input('ticket_uuid'))
+        ->enter()
+        ->persist();
 });
