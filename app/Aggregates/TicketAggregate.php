@@ -2,16 +2,16 @@
 
 namespace App\Aggregates;
 
-use App\StorableEvents\TicketEntered;
-use App\StorableEvents\TicketExited;
 use App\StorableEvents\TicketMarked;
 use App\StorableEvents\TicketPurchased;
 use App\StorableEvents\TicketScanned;
+use Illuminate\Support\Carbon;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class TicketAggregate extends AggregateRoot
 {
-    protected string $lastMarkedEntryPool = '';
+    protected ?string $lastMarkedPool = null;
+    protected ?Carbon $lastMarkedAt = null;
 
     public function purchaseTicket(string $type)
     {
@@ -23,7 +23,7 @@ class TicketAggregate extends AggregateRoot
     {
         $this->recordThat(new TicketScanned($pool, 'enter'));
 
-        if ($this->lastMarkedEntryPool !== $pool) {
+        if ($this->shouldMarkScan($pool)) {
             $this->recordThat(new TicketMarked($pool));
         }
 
@@ -38,7 +38,16 @@ class TicketAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyTicketMarked(TicketMarked $event) {
-        $this->lastMarkedEntryPool = $event->pool;
+    public function applyTicketMarked(TicketMarked $event)
+    {
+        $this->lastMarkedPool = $event->pool;
+        $this->lastMarkedAt = Carbon::parse($event->at);
+    }
+
+    private function shouldMarkScan(string $pool): bool
+    {
+        if ($this->lastMarkedPool !== $pool) return true;
+        if (! $this->lastMarkedAt->isSameDay()) return true;
+        return false;
     }
 }
