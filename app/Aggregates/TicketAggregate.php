@@ -3,6 +3,7 @@
 namespace App\Aggregates;
 
 use App\Exceptions\TicketDenied as TicketDeniedException;
+use App\StorableEvents\TicketAdmitted;
 use App\StorableEvents\TicketDenied;
 use App\StorableEvents\TicketMarked;
 use App\StorableEvents\TicketPurchased;
@@ -35,6 +36,8 @@ class TicketAggregate extends AggregateRoot
 
             $this->recordThat(new TicketMarked($pool));
         }
+
+        $this->recordThat(new TicketAdmitted($pool, 'enter'));
 
         return $this;
     }
