@@ -76,4 +76,9 @@ curl -L -X POST 'http://localhost:8000/api/exit' \
     }'
 ```
 
-This will return an empty HTTP 200 response.
+Exit will always generate a positive response (as long as the request is valid):
+```
+{
+    "admit": true,
+}
+```

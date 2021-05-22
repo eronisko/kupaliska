@@ -59,4 +59,6 @@ Route::post('/exit', function (TicketScanRequest $request) {
     TicketAggregate::retrieve($request->input('ticket_uuid'))
         ->exit($request->input('pool'))
         ->persist();
+
+    return response(['admit' => true]);
 });
