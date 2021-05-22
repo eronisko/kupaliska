@@ -29,6 +29,12 @@ class TicketAggregate extends AggregateRoot
         $this->recordThat(new TicketScanned($pool, 'enter'));
 
         if ($this->shouldMarkScan($pool)) {
+            // Empty type means the purchase event has not been registered, i.e. unknown ticket
+            if ($this->type === '') {
+                $this->recordThat(TicketDenied::notRecognized())->persist();
+                throw TicketDeniedException::notRecognized();
+            }
+
             if (!$this->ticketHasFreeEntriesAvailable()) {
                 $this->recordThat(TicketDenied::noEntriesLeft())->persist();
                 throw TicketDeniedException::noEntriesLeft();

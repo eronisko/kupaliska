@@ -17,4 +17,9 @@ class TicketDenied extends ShouldBeStored
     {
         return new static("no_entries_left");
     }
+
+    public static function notRecognized(): self
+    {
+        return new static("not_recognized");
+    }
 }

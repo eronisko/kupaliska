@@ -1,6 +1,5 @@
 ## TODO
 
-* TicketNotFound
 * docker-compose
 * docs
 
